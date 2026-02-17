@@ -1,90 +1,84 @@
 import { useState, useEffect } from "react";
 
 const Speedometer = () => {
-  const [speed, setSpeed] = useState(0);
-  const [gear, setGear] = useState(1);
-  const maxSpeed = 320;
+  const [speed, setSpeed] = useState(80);
+  const maxSpeed = 280;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setSpeed((prev) => {
-        const next = prev + Math.random() * 15 - 3;
-        const clamped = Math.max(0, Math.min(maxSpeed, next));
-        setGear(Math.min(6, Math.floor(clamped / 55) + 1));
-        return clamped;
+        const next = prev + (Math.random() - 0.4) * 8;
+        return Math.max(0, Math.min(maxSpeed, next));
       });
     }, 100);
     return () => clearInterval(interval);
   }, []);
 
-  const percentage = (speed / maxSpeed) * 100;
-  const barSegments = 20;
-  const filledSegments = Math.floor((percentage / 100) * barSegments);
+  const radius = 52;
+  const cx = 60;
+  const cy = 60;
+  const startAngle = 135;
+  const endAngle = 405;
+  const sweepAngle = endAngle - startAngle;
+  const speedRatio = speed / maxSpeed;
+  const needleAngle = startAngle + speedRatio * sweepAngle;
 
-  const getSegmentColor = (index: number) => {
-    const ratio = index / barSegments;
-    if (ratio < 0.4) return "bg-retro-green";
-    if (ratio < 0.7) return "bg-retro-yellow";
-    if (ratio < 0.85) return "bg-retro-orange";
-    return "bg-retro-red";
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+  const arcPath = (r: number, start: number, end: number) => {
+    const sx = cx + r * Math.cos(toRad(start));
+    const sy = cy + r * Math.sin(toRad(start));
+    const ex = cx + r * Math.cos(toRad(end));
+    const ey = cy + r * Math.sin(toRad(end));
+    const large = end - start > 180 ? 1 : 0;
+    return `M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey}`;
   };
 
+  const needleX = cx + (radius - 14) * Math.cos(toRad(needleAngle));
+  const needleY = cy + (radius - 14) * Math.sin(toRad(needleAngle));
+
   return (
-    <div className="pixel-border retro-shadow bg-retro-dark/90 p-4 relative scanline-overlay overflow-hidden">
-      <div className="relative z-20">
-        <div className="flex items-baseline justify-between mb-3">
-          <span className="text-[8px] text-retro-cyan uppercase tracking-wider">SPD</span>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl text-retro-green retro-text-glow tabular-nums">
-              {Math.floor(speed)}
-            </span>
-            <span className="text-[8px] text-retro-cyan">KM/H</span>
-          </div>
-        </div>
-
-        <div className="flex gap-[3px] mb-3 h-4">
-          {Array.from({ length: barSegments }).map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 transition-all duration-75 ${
-                i < filledSegments
-                  ? `${getSegmentColor(i)} opacity-100`
-                  : "bg-retro-panel opacity-30"
-              }`}
-              style={{
-                boxShadow: i < filledSegments ? "0 0 4px currentColor" : "none",
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5, 6].map((g) => (
-              <div
-                key={g}
-                className={`w-6 h-6 flex items-center justify-center text-[8px] border ${
-                  g === gear
-                    ? "border-retro-cyan text-retro-cyan retro-text-glow bg-retro-blue/50"
-                    : "border-retro-panel text-retro-panel"
-                }`}
-              >
-                {g}
-              </div>
-            ))}
-          </div>
-          <div className="text-[8px] text-retro-yellow">
-            GEAR <span className="text-sm retro-text-glow">{gear}</span>
-          </div>
-        </div>
-
-        <div className="mt-2 flex justify-between text-[6px] text-muted-foreground">
-          <span>0</span>
-          <span>80</span>
-          <span>160</span>
-          <span>240</span>
-          <span>320</span>
-        </div>
+    <div className="relative w-[140px] h-[140px]">
+      <svg viewBox="0 0 120 120" className="w-full h-full">
+        <path
+          d={arcPath(radius, startAngle, endAngle)}
+          fill="none"
+          stroke="rgba(255,255,255,0.15)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d={arcPath(radius, startAngle, Math.min(needleAngle, endAngle))}
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        {speedRatio > 0.75 && (
+          <path
+            d={arcPath(radius, startAngle + sweepAngle * 0.75, Math.min(needleAngle, endAngle))}
+            fill="none"
+            stroke="rgba(239,68,68,0.7)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        )}
+        <line
+          x1={cx}
+          y1={cy}
+          x2={needleX}
+          y2={needleY}
+          stroke={speedRatio > 0.75 ? "#ef4444" : "rgba(255,255,255,0.9)"}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <circle cx={cx} cy={cy} r="3" fill="rgba(255,255,255,0.4)" />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pt-6">
+        <span className="text-[10px] text-white/40 font-light tracking-widest">KM/H</span>
+        <span className="text-3xl font-black text-white hud-text-shadow tabular-nums leading-none">
+          {String(Math.floor(speed)).padStart(3, "0")}
+        </span>
       </div>
     </div>
   );

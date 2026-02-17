@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 
 interface Racer {
-  position: number;
   name: string;
-  gap: string;
   isPlayer: boolean;
 }
 
 const Leaderboard = () => {
   const [racers, setRacers] = useState<Racer[]>([
-    { position: 1, name: "SHADOW_X", gap: "--", isPlayer: false },
-    { position: 2, name: "NEON_DRV", gap: "+1.2s", isPlayer: false },
-    { position: 3, name: ">>>YOU<<<", gap: "+2.8s", isPlayer: true },
-    { position: 4, name: "PIXEL_01", gap: "+4.1s", isPlayer: false },
-    { position: 5, name: "TURBO_99", gap: "+6.5s", isPlayer: false },
-    { position: 6, name: "DRIFT_KG", gap: "+8.3s", isPlayer: false },
+    { name: "SHD", isPlayer: false },
+    { name: "NEO", isPlayer: false },
+    { name: "YOU", isPlayer: true },
+    { name: "PIX", isPlayer: false },
+    { name: "TRB", isPlayer: false },
   ]);
 
   useEffect(() => {
@@ -23,84 +20,44 @@ const Leaderboard = () => {
         const updated = [...prev];
         const playerIdx = updated.findIndex((r) => r.isPlayer);
         if (Math.random() > 0.7 && playerIdx > 0) {
-          const temp = { ...updated[playerIdx - 1] };
-          updated[playerIdx - 1] = {
-            ...updated[playerIdx],
-            position: temp.position,
-          };
-          updated[playerIdx] = { ...temp, position: updated[playerIdx].position };
-        } else if (Math.random() > 0.8 && playerIdx < updated.length - 1) {
-          const temp = { ...updated[playerIdx + 1] };
-          updated[playerIdx + 1] = {
-            ...updated[playerIdx],
-            position: temp.position,
-          };
-          updated[playerIdx] = { ...temp, position: updated[playerIdx].position };
+          [updated[playerIdx - 1], updated[playerIdx]] = [updated[playerIdx], updated[playerIdx - 1]];
+        } else if (Math.random() > 0.85 && playerIdx < updated.length - 1) {
+          [updated[playerIdx + 1], updated[playerIdx]] = [updated[playerIdx], updated[playerIdx + 1]];
         }
-        return updated.map((r, i) => ({
-          ...r,
-          position: i + 1,
-          gap: i === 0 ? "--" : `+${(Math.random() * 10 + 0.5).toFixed(1)}s`,
-        }));
+        return updated;
       });
-    }, 2500);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  const getPositionColor = (pos: number) => {
-    if (pos === 1) return "text-retro-yellow retro-text-glow";
-    if (pos === 2) return "text-retro-cyan";
-    if (pos === 3) return "text-retro-orange";
-    return "text-muted-foreground";
-  };
+  const playerPos = racers.findIndex((r) => r.isPlayer);
 
   return (
-    <div className="pixel-border-yellow retro-shadow bg-retro-dark/90 p-3 relative scanline-overlay overflow-hidden">
-      <div className="relative z-20">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[7px] text-retro-yellow uppercase tracking-wider">
-            🏆 RACE
-          </span>
-          <span className="text-[6px] text-retro-cyan tabular-nums">
-            6 RACERS
-          </span>
-        </div>
-
-        <div className="space-y-[3px]">
-          {racers.map((racer) => (
+    <div className="flex flex-col items-center gap-0">
+      <span className="text-[9px] text-white/40 font-light mb-2">RANK</span>
+      <div className="relative">
+        <div className="w-[3px] h-28 bg-white/10 rounded-full" />
+        {racers.map((racer, i) => {
+          const y = (i / (racers.length - 1)) * 100;
+          return (
             <div
               key={racer.name}
-              className={`flex items-center justify-between px-2 py-1 text-[7px] transition-all ${
-                racer.isPlayer
-                  ? "bg-retro-blue/40 border border-retro-cyan/50"
-                  : "bg-retro-panel/30"
-              }`}
+              className="absolute left-1/2 -translate-x-1/2 transition-all duration-700 ease-out"
+              style={{ top: `${y}%`, transform: `translate(-50%, -50%)` }}
             >
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-4 text-right tabular-nums ${getPositionColor(
-                    racer.position
-                  )}`}
-                >
-                  {racer.position}
-                </span>
-                <span
-                  className={
-                    racer.isPlayer
-                      ? "text-retro-cyan retro-text-glow"
-                      : "text-retro-cyan/70"
-                  }
-                >
-                  {racer.name}
-                </span>
-              </div>
-              <span className="text-muted-foreground tabular-nums text-[6px]">
-                {racer.gap}
-              </span>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  racer.isPlayer ? "bg-blue-500" : "bg-red-500/70"
+                }`}
+                style={{
+                  boxShadow: racer.isPlayer ? "0 0 8px rgba(59,130,246,0.6)" : "none",
+                }}
+              />
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
+      <span className="text-xs font-bold text-white/80 mt-2">{playerPos + 1}/{racers.length}</span>
     </div>
   );
 };

@@ -4,44 +4,44 @@
 
 @layer base {
   :root {
-    --background: 240 20% 7%;
-    --foreground: 60 100% 50%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 95%;
 
-    --card: 230 30% 10%;
-    --card-foreground: 180 80% 80%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 230 30% 10%;
-    --popover-foreground: 180 80% 80%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 180 100% 50%;
-    --primary-foreground: 240 20% 7%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 270 100% 60%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 230 20% 18%;
-    --muted-foreground: 200 20% 55%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
 
-    --accent: 120 100% 50%;
-    --accent-foreground: 240 20% 7%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 350 100% 50%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
-    --ring: 180 100% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 100%;
 
-    --radius: 0.25rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 240 20% 7%;
-    --sidebar-foreground: 180 80% 80%;
-    --sidebar-primary: 180 100% 50%;
-    --sidebar-primary-foreground: 240 20% 7%;
-    --sidebar-accent: 230 20% 18%;
-    --sidebar-accent-foreground: 180 80% 80%;
-    --sidebar-border: 220 30% 20%;
-    --sidebar-ring: 180 100% 50%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 0% 100%;
   }
 }
 
@@ -51,63 +51,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-pixel;
-    image-rendering: pixelated;
+    @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  .pixel-border {
-    border: 3px solid;
-    border-image: linear-gradient(135deg, #53d8fb, #bc13fe) 1;
-  }
-
-  .pixel-border-green {
-    border: 3px solid;
-    border-image: linear-gradient(135deg, #39ff14, #53d8fb) 1;
-  }
-
-  .pixel-border-red {
-    border: 3px solid;
-    border-image: linear-gradient(135deg, #ff073a, #ff6b35) 1;
-  }
-
-  .pixel-border-yellow {
-    border: 3px solid;
-    border-image: linear-gradient(135deg, #ffd700, #ff6b35) 1;
-  }
-
-  .retro-shadow {
-    box-shadow:
-      0 0 10px rgba(83, 216, 251, 0.3),
-      inset 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-
-  .retro-text-glow {
-    text-shadow:
-      0 0 5px currentColor,
-      0 0 10px currentColor;
-  }
-
-  .scanline-overlay::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.15) 2px,
-      rgba(0, 0, 0, 0.15) 4px
-    );
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  .pixel-grid {
-    background-image:
-      linear-gradient(rgba(83, 216, 251, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(83, 216, 251, 0.05) 1px, transparent 1px);
-    background-size: 8px 8px;
+  .hud-text-shadow {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   }
 }

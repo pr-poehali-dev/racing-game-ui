@@ -9,90 +9,62 @@ import ComboCounter from "@/components/hud/ComboCounter";
 import WarningSystem from "@/components/hud/WarningSystem";
 
 const Index = () => {
-  const [time, setTime] = useState({ min: 2, sec: 34, ms: 56 });
-  const [fps] = useState(60);
+  const [score, setScore] = useState(1500);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime((prev) => {
-        let { min, sec, ms } = prev;
-        ms += 3;
-        if (ms >= 100) { ms = 0; sec += 1; }
-        if (sec >= 60) { sec = 0; min += 1; }
-        return { min, sec, ms };
-      });
-    }, 30);
+      if (Math.random() > 0.5) {
+        setScore((prev) => prev + Math.floor(Math.random() * 200 + 50));
+      }
+    }, 1500);
     return () => clearInterval(interval);
   }, []);
 
-  const pad = (n: number) => n.toString().padStart(2, "0");
-
   return (
-    <div className="min-h-screen bg-retro-black pixel-grid relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none z-50 scanline-overlay" />
+    <div className="h-screen w-screen relative overflow-hidden select-none">
+      <img
+        src="https://cdn.poehali.dev/files/fc300b7e-2fa0-473f-a178-088b03a70eb2.png"
+        alt="race background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
-      <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-2 bg-gradient-to-b from-retro-black/80 to-transparent">
-        <div className="flex items-center gap-3">
-          <span className="text-[7px] text-retro-cyan/50">FPS:{fps}</span>
-          <span className="text-[7px] text-retro-green/50">PING:24ms</span>
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30" />
 
-        <div className="text-center">
-          <div className="text-[6px] text-retro-yellow/60 uppercase tracking-widest mb-1">
-            RACE TIME
-          </div>
-          <div className="text-sm text-retro-green retro-text-glow tabular-nums font-pixel">
-            {pad(time.min)}:{pad(time.sec)}.{pad(time.ms)}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span className="text-[7px] text-retro-yellow/50">LAP 3/5</span>
-          <span className="text-[7px] text-retro-cyan/50">BEST: 01:28.42</span>
+      <div className="absolute top-6 left-8 z-10">
+        <div className="flex items-baseline gap-3">
+          <span className="text-4xl font-black text-white hud-text-shadow tabular-nums">
+            {score.toLocaleString()}
+          </span>
+          <span className="text-sm font-semibold text-white/50 tracking-widest">SCORE</span>
         </div>
       </div>
 
-      <div className="relative z-30 min-h-screen p-4 pt-14 grid grid-cols-12 gap-3 items-start">
-        <div className="col-span-3 space-y-3">
-          <HealthBar />
-          <NitroBoost />
-          <ComboCounter />
-        </div>
+      <div className="absolute top-6 right-8 z-10">
+        <EnemyRadar />
+      </div>
 
-        <div className="col-span-6 flex flex-col items-center justify-center min-h-[calc(100vh-7rem)]">
-          <div className="w-full max-w-md">
-            <WarningSystem />
-          </div>
-
-          <div className="mt-auto mb-8 w-full max-w-lg">
-            <Speedometer />
-          </div>
-        </div>
-
-        <div className="col-span-3 space-y-3">
-          <MiniMap />
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 z-10 flex items-center">
+        <div className="ml-8 flex flex-col items-center">
           <Leaderboard />
-          <EnemyRadar />
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center gap-6 py-2 bg-gradient-to-t from-retro-black/80 to-transparent">
-        <div className="flex items-center gap-2 text-[6px] text-retro-cyan/40">
-          <div className="px-2 py-1 border border-retro-cyan/30 text-retro-cyan/60">W</div>
-          <span>ACCEL</span>
-        </div>
-        <div className="flex items-center gap-2 text-[6px] text-retro-cyan/40">
-          <div className="px-2 py-1 border border-retro-cyan/30 text-retro-cyan/60">S</div>
-          <span>BRAKE</span>
-        </div>
-        <div className="flex items-center gap-2 text-[6px] text-retro-cyan/40">
-          <div className="px-2 py-1 border border-retro-cyan/30 text-retro-cyan/60">SPACE</div>
-          <span>NITRO</span>
-        </div>
-        <div className="flex items-center gap-2 text-[6px] text-retro-cyan/40">
-          <div className="px-2 py-1 border border-retro-cyan/30 text-retro-cyan/60">SHIFT</div>
-          <span>DRIFT</span>
-        </div>
+      <div className="absolute left-8 bottom-8 z-10 flex gap-4">
+        <HealthBar />
+        <NitroBoost />
+      </div>
+
+      <div className="absolute bottom-8 right-8 z-10">
+        <Speedometer />
+      </div>
+
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+        <WarningSystem />
+        <ComboCounter />
+      </div>
+
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10">
+        <MiniMap />
       </div>
     </div>
   );
